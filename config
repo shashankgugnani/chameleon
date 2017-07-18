@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 3.10.0-514.26.2.el7.x86_64 Kernel Configuration
+# Linux/x86 3.10.0-514.26.3.el7.x86_64 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
