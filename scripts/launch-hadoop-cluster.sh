@@ -32,7 +32,26 @@ do
 	then
 	echo "FATAL: Not able to ssh to node: $ip"
 	echo "Request timed out"
-	exit 0
+	exit -1
+	fi
+done
+
+# Wait for OFED to be installed 
+for ip in `cat $ips`
+do
+	timeout=20
+	ssh $ip ibstat	
+	while [ $? -ne 0 ] && [ $timeout -ne 0 ]
+	do
+	sleep 30
+	timeout=$(( $timeout - 1 ))
+	ssh $ip ibstat
+	done
+	if [ $timeout -eq 0 ]
+	then
+	echo "FATAL: OFED installation timed out for node: $ip"
+	echo "Request timed out"
+	exit -1
 	fi
 done
 
@@ -123,7 +142,7 @@ if [ $timeout -eq 0 ]
 then
 	echo "FATAL: Not able to ssh to master node"
 	echo "Request timed out"
-	exit 0
+	exit -1
 fi
 
 #Copy necessary files to master node
@@ -150,7 +169,7 @@ if [ $timeout -eq 0 ]
 then
         echo "FATAL: Not able to ssh to master node"
         echo "Request timed out"
-        exit 0
+        exit -1
 fi
 
 #ssh to master node and setup hadoop
@@ -161,3 +180,4 @@ echo "Cluster setup complete"
 echo "RDMA-Hadoop has been installed in /root/rdma-hadoop-<VERSION>"
 echo "You can ssh to the master node using 'ssh root@$master_ip'"
 echo "NOTE: Some of the slaves might still be initializing. You can ssh to the slave nodes from the master node using 'ssh slaven' (Eg: ssh slave1) and check if RDMA-Hadoop is installed in the /root directory. If not, then please wait for a few minutes and check again"
+exit 0
